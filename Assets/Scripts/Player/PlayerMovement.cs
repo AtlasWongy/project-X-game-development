@@ -14,10 +14,12 @@ namespace Player
         private Rigidbody2D _rb;
         private Vector2 _inputMovement;
         private PlayerMovementController _playerMovementController;
+        private Animator _animator;
 
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
+            _animator = GetComponentInChildren<Animator>();
             _playerMovementController = new PlayerMovementController();
         }
 
@@ -35,6 +37,11 @@ namespace Player
             _playerMovementController.Player.Movement.canceled -= OnMovementPerformed;
         }
 
+        private void Update()
+        {
+            UpdateAnimation();
+        }
+
         private void FixedUpdate()
         {
             _rb.velocity = _inputMovement * speed;
@@ -48,6 +55,11 @@ namespace Player
         private void OnMovementCancelled(InputAction.CallbackContext context)
         {
             _inputMovement = Vector2.zero;
+        }
+
+        private void UpdateAnimation()
+        {
+            _animator.SetFloat("Speed", _inputMovement.magnitude * speed);
         }
     }
 }
