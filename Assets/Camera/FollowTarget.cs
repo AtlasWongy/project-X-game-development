@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Camera
+namespace CameraTarget
 {
     public class FollowTarget : MonoBehaviour
     {

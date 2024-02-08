@@ -35,6 +35,15 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Combat"",
+                    ""type"": ""Value"",
+                    ""id"": ""3e0390d3-e380-4a10-a00a-a75e24af42a6"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -52,7 +61,7 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
                 {
                     ""name"": ""up"",
                     ""id"": ""06d80cee-72c3-463f-a9f7-7013a84ef9bf"",
-                    ""path"": ""<Keyboard>/upArrow"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -63,7 +72,7 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
                 {
                     ""name"": ""down"",
                     ""id"": ""68a669c8-fc32-4deb-829c-d01a7c231fe4"",
-                    ""path"": ""<Keyboard>/downArrow"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -74,7 +83,7 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
                 {
                     ""name"": ""left"",
                     ""id"": ""fee82062-7620-48f9-baef-6ba2ec7d13b8"",
-                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -85,13 +94,24 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
                 {
                     ""name"": ""right"",
                     ""id"": ""b5232c81-175d-459e-8022-c284a82bfe5a"",
-                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9fd8ee5c-15d5-4ec7-a943-392c199135fc"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Combat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -101,6 +121,7 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
+        m_Player_Combat = m_Player.FindAction("Combat", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -163,11 +184,13 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Movement;
+    private readonly InputAction m_Player_Combat;
     public struct PlayerActions
     {
         private @PlayerMovementController m_Wrapper;
         public PlayerActions(@PlayerMovementController wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
+        public InputAction @Combat => m_Wrapper.m_Player_Combat;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -180,6 +203,9 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
             @Movement.started += instance.OnMovement;
             @Movement.performed += instance.OnMovement;
             @Movement.canceled += instance.OnMovement;
+            @Combat.started += instance.OnCombat;
+            @Combat.performed += instance.OnCombat;
+            @Combat.canceled += instance.OnCombat;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -187,6 +213,9 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
             @Movement.started -= instance.OnMovement;
             @Movement.performed -= instance.OnMovement;
             @Movement.canceled -= instance.OnMovement;
+            @Combat.started -= instance.OnCombat;
+            @Combat.performed -= instance.OnCombat;
+            @Combat.canceled -= instance.OnCombat;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -207,5 +236,6 @@ public partial class @PlayerMovementController: IInputActionCollection2, IDispos
     public interface IPlayerActions
     {
         void OnMovement(InputAction.CallbackContext context);
+        void OnCombat(InputAction.CallbackContext context);
     }
 }
